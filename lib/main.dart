@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pax_wardrobe_app/src/basic_page.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pax_wardrobe_app/src/ui/basic_page.dart';
+import 'package:pax_wardrobe_app/src/ui/main_page.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(const ProviderScope(child: MyApp()));
 }
 
 class MyApp extends StatelessWidget {
@@ -17,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const BasicPage(),
+      home: const MainPage(),
     );
   }
 }
