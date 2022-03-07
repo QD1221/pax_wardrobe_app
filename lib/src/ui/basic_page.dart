@@ -1,5 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:pax_wardrobe_app/src/provider/basic_provider.dart';
 
 class BasicPage extends StatefulWidget {
   const BasicPage({Key? key}) : super(key: key);
@@ -9,8 +11,6 @@ class BasicPage extends StatefulWidget {
 }
 
 class _BasicPageState extends State<BasicPage> {
-  double _widthValue = 50.0;
-
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -51,63 +51,91 @@ class _BasicPageState extends State<BasicPage> {
               ],
             ),
           ),
-          Slider(
-            max: 300,
-            min: 50,
-            value: _widthValue,
-            thumbColor: Colors.black,
-            activeColor: Colors.black,
-            inactiveColor: Colors.grey,
-            divisions: 250,
-            onChanged: (double value) {
-              setState(() {
-                _widthValue = value;
-              });
-            },
-            label: '${_widthValue.toStringAsFixed(0)} cm',
-          ),
+          Consumer(builder: (context, ref, _) {
+            final basic = ref.watch(basicProvider);
+            return Slider(
+              max: 300,
+              min: 50,
+              value: basic.width ?? 50,
+              thumbColor: Colors.black,
+              activeColor: Colors.black,
+              inactiveColor: Colors.grey,
+              divisions: 250,
+              onChanged: (double value) {
+                final _basic = ref.watch(basicProvider.notifier);
+                _basic.updateWidth(value);
+              },
+              label: '${basic.width?.toStringAsFixed(0)} cm',
+            );
+          }),
           const SizedBox(height: 24),
           const Text('Height'),
           const SizedBox(height: 16),
           SizedBox(
             height: 42,
             width: double.infinity,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '201 cm',
-                        style: TextStyle(fontWeight: FontWeight.bold),
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '236 cm',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+            child: Consumer(builder: (context, ref, _) {
+              final basic = ref.watch(basicProvider);
+              return Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        final _basic = ref.watch(basicProvider.notifier);
+                        _basic.updateHeight(0);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: basic.height == 0
+                              ? Colors.black
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '201 cm',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: basic.height == 0
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        final _basic = ref.watch(basicProvider.notifier);
+                        _basic.updateHeight(1);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: basic.height == 1
+                              ? Colors.black
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '236 cm',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: basic.height == 1
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              );
+            }),
           ),
           const SizedBox(height: 24),
           const Text('Depth'),
@@ -115,111 +143,209 @@ class _BasicPageState extends State<BasicPage> {
           SizedBox(
             height: 42,
             width: double.infinity,
-            child: Row(
-              children: [
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.black,
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '35 cm',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
+            child: Consumer(builder: (context, ref, _) {
+              final basic = ref.watch(basicProvider);
+
+              return Row(
+                children: [
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        final _basic = ref.watch(basicProvider.notifier);
+                        _basic.updateDepth(0);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: basic.depth == 0
+                              ? Colors.black
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '35 cm',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: basic.depth == 0
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.grey[300],
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        '58 cm',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                  const SizedBox(width: 16),
+                  Expanded(
+                    child: GestureDetector(
+                      onTap: () {
+                        final _basic = ref.watch(basicProvider.notifier);
+                        _basic.updateDepth(1);
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: basic.depth == 1
+                              ? Colors.black
+                              : Colors.grey[300],
+                          borderRadius: BorderRadius.circular(24),
+                        ),
+                        child: Center(
+                          child: Text(
+                            '58 cm',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              color: basic.depth == 1
+                                  ? Colors.white
+                                  : Colors.black,
+                            ),
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              );
+            }),
           ),
           const SizedBox(height: 24),
           const Text('Frame color'),
           const SizedBox(height: 16),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Container(
-                height: 64,
-                width: 64,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  border: Border.all(
-                    color: Colors.black,
-                    width: 2,
-                  ),
-                  shape: BoxShape.circle,
-                ),
-                child: const Center(
-                  child: Icon(
-                    Icons.check,
-                    size: 20,
-                  ),
-                ),
-              ),
-              Container(
-                height: 64,
-                width: 64,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  shape: BoxShape.circle,
-                  image: const DecorationImage(
-                    image: CachedNetworkImageProvider(
-                        'https://cdn.pixabay.com/photo/2015/01/07/16/37/wood-591631__480.jpg'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-              Container(
-                height: 64,
-                width: 64,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  shape: BoxShape.circle,
-                  image: const DecorationImage(
-                    image: CachedNetworkImageProvider(
-                        'https://cdn.pixabay.com/photo/2016/11/23/15/04/wood-1853403__340.jpg'),
-                    fit: BoxFit.cover,
+          Consumer(builder: (context, ref, _) {
+            final basic = ref.watch(basicProvider);
+
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                GestureDetector(
+                  onTap: () {
+                    final _basic = ref.watch(basicProvider.notifier);
+                    _basic.updateFrame(0);
+                  },
+                  child: Container(
+                    height: 64,
+                    width: 64,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      border: Border.all(
+                        color: basic.frameColor == 0
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                    ),
+                    child: basic.frameColor == 0
+                        ? const Center(
+                            child: Icon(
+                              Icons.check,
+                              size: 20,
+                            ),
+                          )
+                        : null,
                   ),
                 ),
-              ),
-              Container(
-                height: 64,
-                width: 64,
-                decoration: BoxDecoration(
-                  color: Colors.grey[400],
-                  shape: BoxShape.circle,
-                  image: const DecorationImage(
-                    image: CachedNetworkImageProvider(
-                        'https://cdn.pixabay.com/photo/2016/01/09/16/28/wood-1130494__340.jpg'),
-                    fit: BoxFit.cover,
+                GestureDetector(
+                  onTap: () {
+                    final _basic = ref.watch(basicProvider.notifier);
+                    _basic.updateFrame(1);
+                  },
+                  child: Container(
+                    height: 64,
+                    width: 64,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      border: Border.all(
+                        color: basic.frameColor == 1
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                      image: const DecorationImage(
+                        image: CachedNetworkImageProvider(
+                            'https://cdn.pixabay.com/photo/2015/01/07/16/37/wood-591631__480.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: basic.frameColor == 1
+                        ? const Center(
+                            child: Icon(
+                              Icons.check,
+                              size: 20,
+                            ),
+                          )
+                        : null,
                   ),
                 ),
-              ),
-            ],
-          )
+                GestureDetector(
+                  onTap: () {
+                    final _basic = ref.watch(basicProvider.notifier);
+                    _basic.updateFrame(2);
+                  },
+                  child: Container(
+                    height: 64,
+                    width: 64,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      border: Border.all(
+                        color: basic.frameColor == 2
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                      image: const DecorationImage(
+                        image: CachedNetworkImageProvider(
+                            'https://cdn.pixabay.com/photo/2016/11/23/15/04/wood-1853403__340.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: basic.frameColor == 2
+                        ? const Center(
+                            child: Icon(
+                              Icons.check,
+                              size: 20,
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+                GestureDetector(
+                  onTap: () {
+                    final _basic = ref.watch(basicProvider.notifier);
+                    _basic.updateFrame(3);
+                  },
+                  child: Container(
+                    height: 64,
+                    width: 64,
+                    decoration: BoxDecoration(
+                      color: Colors.grey[400],
+                      border: Border.all(
+                        color: basic.frameColor == 3
+                            ? Colors.black
+                            : Colors.transparent,
+                        width: 2,
+                      ),
+                      shape: BoxShape.circle,
+                      image: const DecorationImage(
+                        image: CachedNetworkImageProvider(
+                            'https://cdn.pixabay.com/photo/2016/01/09/16/28/wood-1130494__340.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    child: basic.frameColor == 3
+                        ? const Center(
+                            child: Icon(
+                              Icons.check,
+                              size: 20,
+                            ),
+                          )
+                        : null,
+                  ),
+                ),
+              ],
+            );
+          })
         ],
       ),
     );
